@@ -1,6 +1,8 @@
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDbcVL4dhTYHuMCpBYT_c1AVAnbb_6KZ3E",
   authDomain: "zjebanydezo-clicker.firebaseapp.com",
+  databaseURL: "https://zjebanydezo-clicker-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "zjebanydezo-clicker",
   storageBucket: "zjebanydezo-clicker.firebasestorage.app",
   messagingSenderId: "553894031508",
@@ -8,32 +10,37 @@ const firebaseConfig = {
   measurementId: "G-BZ0FSHNE46"
 };
 
-// Initialize Firebase
-import { initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
-import { getDatabase, ref, set, get, child, push, onValue, serverTimestamp } from 'firebase/database';
+// Initialize Firebase (using CDN compat version)
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const database = firebase.database();
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const database = getDatabase(app);
+// Set auth persistence to LOCAL (persists until explicitly signed out)
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .then(() => {
+        console.log('Auth persistence set to LOCAL');
+    })
+    .catch((error) => {
+        console.error('Failed to set auth persistence:', error);
+    });
 
 // Current user
 let currentUser = null;
 
 // Authentication functions
-export const registerUser = async (email, password, username) => {
+window.registerUser = async (email, password, username) => {
     try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
         
         // Save user data to database
-        await set(ref(database, 'users/' + user.uid), {
+        await database.ref('users/' + user.uid).set({
             username: username,
             email: email,
             totalDezos: 0,
             bestScore: 0,
-            joinedAt: serverTimestamp(),
-            lastLogin: serverTimestamp()
+            joinedAt: firebase.database.ServerValue.TIMESTAMP,
+            lastLogin: firebase.database.ServerValue.TIMESTAMP
         });
         
         console.log('User registered successfully!');
@@ -44,13 +51,13 @@ export const registerUser = async (email, password, username) => {
     }
 };
 
-export const loginUser = async (email, password) => {
+window.loginUser = async (email, password) => {
     try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
         
         // Update last login
-        await set(ref(database, 'users/' + user.uid + '/lastLogin'), serverTimestamp());
+        await database.ref('users/' + user.uid + '/lastLogin').set(firebase.database.ServerValue.TIMESTAMP);
         
         console.log('User logged in successfully!');
         return { success: true, user: user };
@@ -60,9 +67,9 @@ export const loginUser = async (email, password) => {
     }
 };
 
-export const logoutUser = async () => {
+window.logoutUser = async () => {
     try {
-        await signOut(auth);
+        await auth.signOut();
         currentUser = null;
         console.log('User logged out successfully!');
         return { success: true };
@@ -73,20 +80,23 @@ export const logoutUser = async () => {
 };
 
 // Game data functions
-export const saveGameData = async (gameData) => {
+window.saveGameData = async (gameData) => {
     if (!currentUser) return;
     
     try {
-        const userRef = ref(database, 'users/' + currentUser.uid);
-        await set(userRef, {
-            ...gameData.userData,
-            totalDezos: gameData.totalHalusky,
-            bestScore: Math.max(gameData.userData?.bestScore || 0, gameData.totalHalusky),
-            lastSave: serverTimestamp(),
+        const userRef = database.ref('users/' + currentUser.uid);
+        const snapshot = await userRef.once('value');
+        const userData = snapshot.val() || {};
+        
+        await userRef.set({
+            ...userData,
+            totalDezos: gameData.totalZjebanydezo,
+            bestScore: Math.max(userData.bestScore || 0, gameData.totalZjebanydezo),
+            lastSave: firebase.database.ServerValue.TIMESTAMP,
             gameState: {
-                halusky: gameData.halusky,
-                totalHalusky: gameData.totalHalusky,
-                haluskyPerSecond: gameData.haluskyPerSecond,
+                zjebanydezo: gameData.zjebanydezo,
+                totalZjebanydezo: gameData.totalZjebanydezo,
+                zjebanydezosPerSecond: gameData.zjebanydezosPerSecond,
                 clickPower: gameData.clickPower,
                 upgrades: gameData.upgrades,
                 achievements: gameData.achievements
@@ -99,12 +109,12 @@ export const saveGameData = async (gameData) => {
     }
 };
 
-export const loadGameData = async () => {
+window.loadGameData = async () => {
     if (!currentUser) return null;
     
     try {
-        const userRef = ref(database, 'users/' + currentUser.uid);
-        const snapshot = await get(userRef);
+        const userRef = database.ref('users/' + currentUser.uid);
+        const snapshot = await userRef.once('value');
         
         if (snapshot.exists()) {
             const userData = snapshot.val();
@@ -119,10 +129,10 @@ export const loadGameData = async () => {
 };
 
 // Leaderboard functions
-export const getLeaderboard = async () => {
+window.getLeaderboard = async () => {
     try {
-        const usersRef = ref(database, 'users');
-        const snapshot = await get(usersRef);
+        const usersRef = database.ref('users');
+        const snapshot = await usersRef.once('value');
         
         if (snapshot.exists()) {
             const users = snapshot.val();
@@ -146,10 +156,11 @@ export const getLeaderboard = async () => {
 };
 
 // Auth state observer
-onAuthStateChanged(auth, (user) => {
+auth.onAuthStateChanged((user) => {
+    console.log('Firebase auth state changed:', user ? 'User signed in' : 'User signed out');
     currentUser = user;
     if (user) {
-        console.log('User is signed in:', user.email);
+        console.log('User is signed in:', user.email, 'UID:', user.uid);
         // Trigger UI update
         window.dispatchEvent(new CustomEvent('authStateChanged', { detail: { user, loggedIn: true } }));
     } else {
@@ -159,4 +170,4 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // Export current user getter
-export const getCurrentUser = () => currentUser;
+window.getCurrentUser = () => currentUser;
