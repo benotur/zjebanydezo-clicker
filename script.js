@@ -1,5 +1,5 @@
 // Game state
-let gameState = {
+const gameState = {
     zjebanydezo: 0,
     totalZjebanydezo: 0,
     zjebanydezosPerSecond: 0,
@@ -11,35 +11,25 @@ let gameState = {
         felicia: { owned: 0, cost: 2500, power: 25, costMultiplier: 1.15, name: "Škoda Felicia", icon: "🚗", description: "+25 dežo per second" },
         panel: { owned: 0, cost: 10000, power: 100, costMultiplier: 1.15, name: "Panel Apartment", icon: "🏘️", description: "+100 dežo per second" },
         slivovica: { owned: 0, cost: 50000, power: 500, costMultiplier: 1.15, name: "Homemade Slivovica", icon: "🥃", description: "+500 dežo per second" },
-        
-        // More Slovak meme upgrades
         dedko: { owned: 0, cost: 100000, power: 1000, costMultiplier: 1.15, name: "Village Dedko", icon: "👴", description: "+1000 dežo per second" },
         slovnaft: { owned: 0, cost: 250000, power: 2500, costMultiplier: 1.15, name: "Slovnaft Refinery", icon: "🏭", description: "+2500 dežo per second" },
-        koliba: { owned: 0, cost: 500000, power: 5000, costMultiplier: 1.15, name: "Mountain Koliba", icon: "�️", description: "+5000 dežo per second" },
+        koliba: { owned: 0, cost: 500000, power: 5000, costMultiplier: 1.15, name: "Mountain Koliba", icon: "🏔️", description: "+5000 dežo per second" },
         pagac: { owned: 0, cost: 1000000, power: 10000, costMultiplier: 1.15, name: "Richard Pagáč", icon: "🎭", description: "+10000 dežo per second" },
-        
-        // Epic Slovak memes
         marian: { owned: 0, cost: 2500000, power: 25000, costMultiplier: 1.15, name: "Marián Čekovský", icon: "📺", description: "+25000 dežo per second" },
         tesco: { owned: 0, cost: 5000000, power: 50000, costMultiplier: 1.15, name: "Tesco Value Goods", icon: "🛒", description: "+50000 dežo per second" },
         helenka: { owned: 0, cost: 10000000, power: 100000, costMultiplier: 1.15, name: "Helenka Vondráčková", icon: "🎤", description: "+100000 dežo per second" },
         slovan: { owned: 0, cost: 25000000, power: 250000, costMultiplier: 1.15, name: "ŠK Slovan Support", icon: "⚽", description: "+250000 dežo per second" },
         csob: { owned: 0, cost: 50000000, power: 500000, costMultiplier: 1.15, name: "ČSOB Banking", icon: "🏦", description: "+500000 dežo per second" },
-        
-        // Legendary Slovak memes
         danko: { owned: 0, cost: 100000000, power: 1000000, costMultiplier: 1.15, name: "Danko's Politics", icon: "🎪", description: "+1M dežo per second" },
         lidl: { owned: 0, cost: 250000000, power: 2500000, costMultiplier: 1.15, name: "Lidl Shopping Spree", icon: "🛍️", description: "+2.5M dežo per second" },
         sme: { owned: 0, cost: 500000000, power: 5000000, costMultiplier: 1.15, name: "SME Newspaper Drama", icon: "📰", description: "+5M dežo per second" },
         tatry: { owned: 0, cost: 1000000000, power: 10000000, costMultiplier: 1.15, name: "High Tatras Tourism", icon: "⛰️", description: "+10M dežo per second" },
         euro: { owned: 0, cost: 2500000000, power: 25000000, costMultiplier: 1.15, name: "Euro Adoption Chaos", icon: "💶", description: "+25M dežo per second" },
-        
-        // Ultimate Slovak memes
-        velvet: { owned: 0, cost: 5000000000, power: 50000000, costMultiplier: 1.15, name: "Velvet Revolution", icon: "�", description: "+50M dežo per second" },
+        velvet: { owned: 0, cost: 5000000000, power: 50000000, costMultiplier: 1.15, name: "Velvet Revolution", icon: "🌹", description: "+50M dežo per second" },
         president: { owned: 0, cost: 10000000000, power: 100000000, costMultiplier: 1.15, name: "Presidential Palace", icon: "🏰", description: "+100M dežo per second" },
         bratislava: { owned: 0, cost: 25000000000, power: 250000000, costMultiplier: 1.15, name: "Bratislava Castle", icon: "🏛️", description: "+250M dežo per second" },
         slovakia: { owned: 0, cost: 50000000000, power: 500000000, costMultiplier: 1.15, name: "Entire Slovakia", icon: "🇸🇰", description: "+500M dežo per second" },
-        
-        // Secret final upgrade
-        universe: { owned: 0, cost: 100000000000, power: 1000000000, costMultiplier: 1.15, name: "Slovak Universe Empire", icon: "�", description: "+1B dežo per second" }
+        universe: { owned: 0, cost: 100000000000, power: 1000000000, costMultiplier: 1.15, name: "Slovak Universe Empire", icon: "🌌", description: "+1B dežo per second" }
     },
     achievements: []
 };
@@ -71,7 +61,6 @@ const funnyMessages = [
     "Village pub closing time extended",
     "Traditional Slovak male bonding",
     "Dežo is the local drinking champion",
-    // New Slovak meme messages
     "Babička made extra halušky today!",
     "Richard Pagáč just told another joke!",
     "Marián Čekovský is on TV again!",
@@ -123,8 +112,6 @@ const messageDisplay = document.getElementById('message-display');
 
 // Event listeners
 zjebanydezosButton.addEventListener('click', clickZjebanydezo);
-
-// Note: Upgrade event listeners are now added dynamically in generateUpgradeHTML()
 
 // Main click function
 function clickZjebanydezo(event) {
@@ -298,36 +285,11 @@ function loadGame() {
         const savedData = JSON.parse(savedGame);
         
         // Merge saved data with current gameState, preserving new upgrade structure
-        gameState = {
-            ...gameState,
+        Object.assign(gameState, {
             ...savedData,
             upgrades: {
                 ...gameState.upgrades,
                 ...savedData.upgrades
-            }
-        };
-        
-        // Ensure all upgrades have the new properties
-        Object.keys(gameState.upgrades).forEach(key => {
-            const upgrade = gameState.upgrades[key];
-            if (!upgrade.name) {
-                // Handle old upgrade format - map old keys to new names
-                const upgradeNames = {
-                    cursor: { name: "Zlatý Bažant Beer", icon: "🍺", description: "+1 dežo per click" },
-                    slivovica: { name: "Homemade Slivovica", icon: "🥃", description: "+500 dežo per second" },
-                    pub: { name: "Village Pub", icon: "🍻", description: "+5 dežo per second" },
-                    distillery: { name: "Pálenka Distillery", icon: "🏭", description: "+25 dežo per second" },
-                    festival: { name: "Drinking Festival", icon: "🎪", description: "+100 dežo per second" },
-                    brewery: { name: "Slovak Brewery Empire", icon: "🏰", description: "+500 dežo per second" },
-                    // Legacy mappings
-                    restauracia: { name: "Village Dedko", icon: "👴", description: "+1000 dežo per second" },
-                    fabrika: { name: "Slovnaft Refinery", icon: "🏭", description: "+2500 dežo per second" },
-                    slovensko: { name: "High Tatras Tourism", icon: "⛰️", description: "+10M dežo per second" }
-                };
-                
-                if (upgradeNames[key]) {
-                    Object.assign(upgrade, upgradeNames[key]);
-                }
             }
         });
         
@@ -353,23 +315,6 @@ setInterval(saveGame, 10000);
 
 // Save on page unload
 window.addEventListener('beforeunload', saveGame);
-
-// Initialize game
-document.addEventListener('DOMContentLoaded', () => {
-    loadGame();
-    generateUpgradeHTML(); // Generate upgrades dynamically
-    updateDisplay();
-    updateUpgradeDisplay();
-    setupMenuToggles();
-    
-    // Show welcome message
-    setTimeout(() => {
-        showMessage("Welcome to Slovak Drunk Simulator! 🍺");
-    }, 1000);
-});
-
-// Update upgrade affordability regularly
-setInterval(updateUpgradeDisplay, 500);
 
 // Menu toggle functionality
 function setupMenuToggles() {
@@ -404,6 +349,81 @@ function toggleMenu(button, menu) {
     }
 }
 
+// Dynamic upgrade generation system
+function generateUpgradeHTML() {
+    const upgradesGrid = document.querySelector('.upgrades-grid');
+    if (!upgradesGrid) return;
+
+    upgradesGrid.innerHTML = ''; // Clear existing content
+
+    Object.entries(gameState.upgrades).forEach(([key, upgrade]) => {
+        const upgradeElement = document.createElement('div');
+        upgradeElement.className = 'upgrade';
+        upgradeElement.dataset.upgrade = key;
+
+        upgradeElement.innerHTML = `
+            <div class="upgrade-icon">${upgrade.icon}</div>
+            <div class="upgrade-info">
+                <h4>${upgrade.name}</h4>
+                <p>${upgrade.description}</p>
+                <div class="upgrade-cost">Cost: <span>${formatNumber(upgrade.cost)}</span></div>
+                <div class="upgrade-owned">Owned: <span>${upgrade.owned}</span></div>
+            </div>
+        `;
+
+        upgradeElement.addEventListener('click', () => buyUpgrade(key));
+        upgradesGrid.appendChild(upgradeElement);
+    });
+}
+
+// Function to add new upgrades easily
+function addUpgrade(key, upgradeData) {
+    gameState.upgrades[key] = {
+        owned: 0,
+        cost: upgradeData.cost || 1000,
+        power: upgradeData.power || 10,
+        costMultiplier: upgradeData.costMultiplier || 1.15,
+        name: upgradeData.name || "New Upgrade",
+        icon: upgradeData.icon || "🔧",
+        description: upgradeData.description || "A new upgrade"
+    };
+    
+    // Regenerate the upgrade HTML
+    generateUpgradeHTML();
+    updateUpgradeDisplay();
+    
+    console.log(`Added upgrade: ${upgradeData.name}`);
+}
+
+// Helper functions for adding upgrades via console
+window.addUpgrade = addUpgrade;
+
+window.quickAddUpgrade = function(name, cost, power, icon, description) {
+    const key = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+    addUpgrade(key, { name, cost, power, icon, description });
+};
+
+window.listUpgrades = function() {
+    console.log('Current upgrades:');
+    Object.entries(gameState.upgrades).forEach(([key, upgrade]) => {
+        console.log(`${key}: ${upgrade.name} (${upgrade.icon}) - Cost: ${upgrade.cost}, Power: ${upgrade.power}, Owned: ${upgrade.owned}`);
+    });
+};
+
+window.upgradeHelp = function() {
+    console.log(`
+🍺 Zjebaný Dežo Clicker - Upgrade Commands:
+
+addUpgrade(key, {name, cost, power, icon, description}) - Add a new upgrade
+quickAddUpgrade(name, cost, power, icon, description) - Quick add with auto-generated key
+listUpgrades() - List all current upgrades
+upgradeHelp() - Show this help
+
+Example:
+quickAddUpgrade("Bratislava Taxi", 50000, 500, "🚕", "+500 dežo per second")
+`);
+};
+
 // Firebase integration and authentication
 let isLoggedIn = false;
 let userData = null;
@@ -411,59 +431,57 @@ let leaderboardTimer = 30;
 let leaderboardInterval = null;
 let timerInterval = null;
 
-// Import Firebase functions (will be available after module loads)
-let firebaseAuth = null;
-
 // Initialize Firebase integration
 window.addEventListener('load', async () => {
-    // Wait for Firebase module to load
-    setTimeout(initializeFirebase, 1000);
+    await initializeFirebase();
 });
 
 async function initializeFirebase() {
-    try {
-        // Firebase functions will be available globally after module loads
-        // Don't show auth modal immediately - let auth state observer handle it
-        setupAuthListeners();
-        startLeaderboardTimer();
-        
-        // Check if user is already logged in
-        const currentUser = window.getCurrentUser();
-        if (!currentUser) {
-            // Only show auth modal if no user is logged in after a brief delay
-            setTimeout(() => {
-                if (!isLoggedIn) {
-                    showAuthModal();
-                }
-            }, 2000);
+    if (typeof window.getCurrentUser === 'function') {
+        const user = window.getCurrentUser();
+        if (user) {
+            isLoggedIn = true;
+            userData = user;
+            showUserBar(user);
+            hideAuthModal();
+            
+            // Load game data from Firebase
+            const savedGameData = await window.loadGameData();
+            if (savedGameData) {
+                Object.assign(gameState, savedGameData);
+                updateDisplay();
+                generateUpgradeHTML();
+                updateUpgradeDisplay();
+            }
+            
+            // Start leaderboard updates
+            startLeaderboardUpdates();
+        } else {
+            showAuthModal();
         }
-    } catch (error) {
-        console.error('Firebase initialization error:', error);
-        // Show auth modal on error
-        showAuthModal();
+        
+        setupAuthListeners();
     }
 }
 
 // Auth state change handler
 window.addEventListener('authStateChanged', (event) => {
     const { user, loggedIn } = event.detail;
-    isLoggedIn = loggedIn;
-    userData = user;
     
-    console.log('Auth state changed:', loggedIn ? 'Logged in' : 'Logged out', user);
-    
-    if (loggedIn) {
-        hideAuthModal();
+    if (loggedIn && user) {
+        isLoggedIn = true;
+        userData = user;
         showUserBar(user);
-        loadUserGameData();
-        updateLeaderboard();
-        document.body.classList.add('logged-in');
-        console.log('User authenticated, loading game data...');
+        hideAuthModal();
+        startLeaderboardUpdates();
+        
+        // Save current game state to Firebase
+        window.saveGameData(gameState);
     } else {
+        isLoggedIn = false;
+        userData = null;
         showAuthModal();
-        hideUserBar();
-        document.body.classList.remove('logged-in');
-        console.log('User not authenticated, showing auth modal');
+        stopLeaderboardUpdates();
     }
 });
 
@@ -472,20 +490,18 @@ function setupAuthListeners() {
     document.getElementById('login-btn').addEventListener('click', async () => {
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
+        const errorDiv = document.getElementById('auth-error');
         
         if (!email || !password) {
-            showAuthError('Please fill in all fields');
+            errorDiv.textContent = 'Please fill in all fields';
             return;
         }
         
-        // Call Firebase login (assuming it's globally available)
-        try {
-            const result = await window.loginUser(email, password);
-            if (!result.success) {
-                showAuthError(result.error);
-            }
-        } catch (error) {
-            showAuthError('Login failed. Please try again.');
+        const result = await window.loginUser(email, password);
+        if (result.success) {
+            errorDiv.textContent = '';
+        } else {
+            errorDiv.textContent = result.error;
         }
     });
     
@@ -494,34 +510,27 @@ function setupAuthListeners() {
         const username = document.getElementById('register-username').value;
         const email = document.getElementById('register-email').value;
         const password = document.getElementById('register-password').value;
+        const errorDiv = document.getElementById('auth-error');
         
         if (!username || !email || !password) {
-            showAuthError('Please fill in all fields');
+            errorDiv.textContent = 'Please fill in all fields';
             return;
         }
         
-        if (password.length < 6) {
-            showAuthError('Password must be at least 6 characters');
-            return;
-        }
-        
-        try {
-            const result = await window.registerUser(email, password, username);
-            if (!result.success) {
-                showAuthError(result.error);
-            }
-        } catch (error) {
-            showAuthError('Registration failed. Please try again.');
+        const result = await window.registerUser(email, password, username);
+        if (result.success) {
+            errorDiv.textContent = '';
+        } else {
+            errorDiv.textContent = result.error;
         }
     });
     
-    // Toggle between login and register
+    // Form toggles
     document.getElementById('show-register').addEventListener('click', (e) => {
         e.preventDefault();
         document.getElementById('login-form').style.display = 'none';
         document.getElementById('register-form').style.display = 'block';
         document.getElementById('auth-title').textContent = 'Register for Zjebaný Dežo Clicker';
-        clearAuthError();
     });
     
     document.getElementById('show-login').addEventListener('click', (e) => {
@@ -529,212 +538,17 @@ function setupAuthListeners() {
         document.getElementById('register-form').style.display = 'none';
         document.getElementById('login-form').style.display = 'block';
         document.getElementById('auth-title').textContent = 'Login to Zjebaný Dežo Clicker';
-        clearAuthError();
     });
     
-    // Logout button
+    // Logout
     document.getElementById('logout-btn').addEventListener('click', async () => {
-        try {
-            await window.logoutUser();
-        } catch (error) {
-            console.error('Logout error:', error);
-        }
+        await window.logoutUser();
     });
     
-    // Leaderboard refresh
-    document.getElementById('refresh-leaderboard').addEventListener('click', () => {
-        updateLeaderboard();
-        resetLeaderboardTimer();
-    });
+    // Refresh leaderboard
+    document.getElementById('refresh-leaderboard').addEventListener('click', refreshLeaderboard);
 }
 
-// Dynamic upgrade generation system
-function generateUpgradeHTML() {
-    const upgradesContainer = document.querySelector('.upgrades-grid');
-    if (!upgradesContainer) return;
-
-    // Clear existing upgrades
-    upgradesContainer.innerHTML = '';
-
-    // Generate upgrades from gameState
-    Object.entries(gameState.upgrades).forEach(([upgradeKey, upgradeData]) => {
-        const upgradeElement = document.createElement('div');
-        upgradeElement.className = 'upgrade';
-        upgradeElement.dataset.upgrade = upgradeKey;
-        
-        upgradeElement.innerHTML = `
-            <div class="upgrade-icon">${upgradeData.icon}</div>
-            <div class="upgrade-info">
-                <h4>${upgradeData.name}</h4>
-                <p>${upgradeData.description}</p>
-                <div class="upgrade-cost">Cost: <span>${upgradeData.cost}</span> dežo</div>
-                <div class="upgrade-owned">Owned: <span>${upgradeData.owned}</span></div>
-            </div>
-        `;
-        
-        // Add click event listener
-        upgradeElement.addEventListener('click', () => buyUpgrade(upgradeKey));
-        
-        upgradesContainer.appendChild(upgradeElement);
-    });
-
-    // Update the upgradeElements reference
-    window.upgradeElements = document.querySelectorAll('.upgrade');
-}
-
-// Function to add new upgrades easily
-function addUpgrade(key, upgradeData) {
-    gameState.upgrades[key] = {
-        owned: 0,
-        cost: upgradeData.cost,
-        power: upgradeData.power,
-        costMultiplier: upgradeData.costMultiplier || 1.15,
-        name: upgradeData.name,
-        icon: upgradeData.icon,
-        description: upgradeData.description
-    };
-    
-    // Regenerate the upgrades display
-    generateUpgradeHTML();
-    updateUpgradeDisplay();
-    
-    console.log(`Added new upgrade: ${upgradeData.name}`);
-}
-
-// Example function to add a new upgrade (you can call this anytime)
-function addNewUpgrade() {
-    // Example: Add a new upgrade
-    const newUpgrade = {
-        cost: 250000,
-        power: 1000,
-        name: "International Drinking Championship",
-        icon: "🏆",
-        description: "+1000 dežo per second"
-    };
-    
-    addUpgrade('championship', newUpgrade);
-}
-
-// Make addUpgrade available globally for easy access
-window.addUpgrade = addUpgrade;
-window.addNewUpgrade = addNewUpgrade;
-
-// Helper functions for adding upgrades via console
-// These functions are available globally for easy upgrade management
-
-// Add multiple predefined upgrades at once
-window.addPremiumUpgrades = function() {
-    const premiumUpgrades = [
-        {
-            key: 'meciar',
-            data: {
-                cost: 75000000000,
-                power: 750000000,
-                name: "Vladimír Mečiar Legacy",
-                icon: "👑",
-                description: "+750M dežo per second"
-            }
-        },
-        {
-            key: 'eurovision',
-            data: {
-                cost: 150000000000,
-                power: 1500000000,
-                name: "Eurovision Slovakia Entry",
-                icon: "�",
-                description: "+1.5B dežo per second"
-            }
-        },
-        {
-            key: 'hockey',
-            data: {
-                cost: 300000000000,
-                power: 3000000000,
-                name: "Slovak Hockey Legends",
-                icon: "🏒",
-                description: "+3B dežo per second"
-            }
-        },
-        {
-            key: 'bojnice',
-            data: {
-                cost: 500000000000,
-                power: 5000000000,
-                name: "Bojnice Castle Magic",
-                icon: "�",
-                description: "+5B dežo per second"
-            }
-        },
-        {
-            key: 'kosice',
-            data: {
-                cost: 1000000000000,
-                power: 10000000000,
-                name: "Košice Steel Empire",
-                icon: "⚒️",
-                description: "+10B dežo per second"
-            }
-        }
-    ];
-
-    premiumUpgrades.forEach(upgrade => {
-        addUpgrade(upgrade.key, upgrade.data);
-    });
-    
-    console.log('Added premium Slovak meme upgrades! Check the upgrades menu.');
-};
-
-// Quick upgrade template
-window.quickAddUpgrade = function(name, cost, power, icon, description) {
-    const key = name.toLowerCase().replace(/\s+/g, '_');
-    addUpgrade(key, {
-        cost: cost,
-        power: power,
-        name: name,
-        icon: icon || "🎯",
-        description: description || `+${power} dežo per second`
-    });
-    console.log(`Added ${name}!`);
-};
-
-// List all current upgrades
-window.listUpgrades = function() {
-    console.log('Current upgrades:');
-    Object.entries(gameState.upgrades).forEach(([key, data]) => {
-        console.log(`${key}: ${data.name} - ${data.icon} - Cost: ${data.cost} - Power: ${data.power}`);
-    });
-};
-
-// Console help
-window.upgradeHelp = function() {
-    console.log(`
-🍺 UPGRADE COMMANDS:
-    
-addUpgrade(key, data) - Add a custom upgrade
-Example: addUpgrade('superdrink', {
-    cost: 1000,
-    power: 50,
-    name: "Super Slovak Drink",
-    icon: "⚡",
-    description: "+50 dežo per second"
-});
-
-quickAddUpgrade(name, cost, power, icon, description) - Quick add
-Example: quickAddUpgrade("Epic Brewery", 100000, 500, "🏭", "+500 dežo per second");
-
-addPremiumUpgrades() - Add 3 premium upgrades
-addNewUpgrade() - Add example championship upgrade
-listUpgrades() - List all current upgrades
-upgradeHelp() - Show this help
-
-Try it: addPremiumUpgrades()
-    `);
-};
-
-// Show help on load
-console.log('🍺 Zjebaný Dežo Clicker loaded! Type upgradeHelp() for upgrade commands.');
-
-// Show auth modal
 function showAuthModal() {
     document.getElementById('auth-modal').style.display = 'flex';
 }
@@ -744,137 +558,17 @@ function hideAuthModal() {
 }
 
 function showUserBar(user) {
+    document.getElementById('user-name').textContent = `Welcome, ${user.email}!`;
     document.getElementById('user-bar').style.display = 'block';
+    document.body.style.paddingTop = '50px';
+}
+
+function startLeaderboardUpdates() {
+    refreshLeaderboard();
     
-    // Try to get username from Firebase database or use email as fallback
-    if (user.uid && window.getCurrentUser) {
-        // Load user data to get username
-        const database = firebase.database();
-        database.ref('users/' + user.uid).once('value').then((snapshot) => {
-            if (snapshot.exists()) {
-                const userData = snapshot.val();
-                const displayName = userData.username || user.email || 'User';
-                document.getElementById('user-name').textContent = `Welcome, ${displayName}!`;
-            } else {
-                document.getElementById('user-name').textContent = `Welcome, ${user.email}!`;
-            }
-        }).catch(() => {
-            document.getElementById('user-name').textContent = `Welcome, ${user.email}!`;
-        });
-    } else {
-        document.getElementById('user-name').textContent = `Welcome, ${user.email}!`;
-    }
-}
-
-function hideUserBar() {
-    document.getElementById('user-bar').style.display = 'none';
-}
-
-function showAuthError(message) {
-    document.getElementById('auth-error').textContent = message;
-}
-
-function clearAuthError() {
-    document.getElementById('auth-error').textContent = '';
-}
-
-async function loadUserGameData() {
-    try {
-        const savedData = await window.loadGameData();
-        if (savedData) {
-            // Merge saved data with current gameState, preserving new upgrade structure
-            gameState = {
-                ...gameState,
-                ...savedData,
-                upgrades: {
-                    ...gameState.upgrades,
-                    ...savedData.upgrades
-                }
-            };
-            
-            // Regenerate upgrades with new data
-            generateUpgradeHTML();
-            updateDisplay();
-            updateUpgradeDisplay();
-            
-            // Restore achievements
-            gameState.achievements.forEach(achievementId => {
-                const achievement = achievementsList.find(a => a.id === achievementId);
-                if (achievement) {
-                    const achievementElement = document.createElement('div');
-                    achievementElement.className = 'achievement';
-                    achievementElement.textContent = achievement.name;
-                    achievementElement.title = achievement.description;
-                    achievementsList_el.appendChild(achievementElement);
-                }
-            });
-            
-            showMessage("Game data loaded from cloud! 🎮");
-        }
-    } catch (error) {
-        console.error('Load error:', error);
-    }
-}
-
-// Save game data to Firebase periodically
-setInterval(async () => {
-    if (isLoggedIn && userData) {
-        try {
-            await window.saveGameData({
-                ...gameState,
-                userData: userData
-            });
-            console.log('Game auto-saved to cloud');
-        } catch (error) {
-            console.error('Auto-save error:', error);
-        }
-    }
-}, 15000); // Auto-save every 15 seconds
-
-// Leaderboard functions
-async function updateLeaderboard() {
-    try {
-        const leaderboard = await window.getLeaderboard();
-        displayLeaderboard(leaderboard);
-    } catch (error) {
-        console.error('Leaderboard update error:', error);
-        document.getElementById('leaderboard-list').innerHTML = 
-            '<div class="leaderboard-loading">Failed to load leaderboard</div>';
-    }
-}
-
-function displayLeaderboard(leaderboard) {
-    const container = document.getElementById('leaderboard-list');
+    leaderboardInterval = setInterval(refreshLeaderboard, 30000);
     
-    if (leaderboard.length === 0) {
-        container.innerHTML = '<div class="leaderboard-loading">No players yet. Be the first!</div>';
-        return;
-    }
-    
-    const currentUserUid = userData?.uid;
-    
-    container.innerHTML = leaderboard.map((player, index) => {
-        const isCurrentUser = player.uid === currentUserUid;
-        return `
-            <div class="leaderboard-item ${isCurrentUser ? 'current-user' : ''}">
-                <span class="leaderboard-rank">#${index + 1}</span>
-                <span class="leaderboard-username">${player.username}</span>
-                <span class="leaderboard-score">${formatNumber(player.totalDezos)} dežo</span>
-            </div>
-        `;
-    }).join('');
-}
-
-function startLeaderboardTimer() {
-    // Update leaderboard every 30 seconds
-    leaderboardInterval = setInterval(() => {
-        if (isLoggedIn) {
-            updateLeaderboard();
-            resetLeaderboardTimer();
-        }
-    }, 30000);
-    
-    // Update timer display every second
+    leaderboardTimer = 30;
     timerInterval = setInterval(() => {
         leaderboardTimer--;
         document.getElementById('leaderboard-timer').textContent = `Next update: ${leaderboardTimer}s`;
@@ -885,7 +579,66 @@ function startLeaderboardTimer() {
     }, 1000);
 }
 
-function resetLeaderboardTimer() {
-    leaderboardTimer = 30;
-    document.getElementById('leaderboard-timer').textContent = `Next update: ${leaderboardTimer}s`;
+function stopLeaderboardUpdates() {
+    if (leaderboardInterval) {
+        clearInterval(leaderboardInterval);
+        leaderboardInterval = null;
+    }
+    
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
 }
+
+async function refreshLeaderboard() {
+    if (!isLoggedIn) return;
+    
+    try {
+        // Save current progress first
+        await window.saveGameData(gameState);
+        
+        const leaderboard = await window.getLeaderboard();
+        const leaderboardList = document.getElementById('leaderboard-list');
+        
+        if (leaderboard.length === 0) {
+            leaderboardList.innerHTML = '<div class="leaderboard-loading">No players yet...</div>';
+            return;
+        }
+        
+        leaderboardList.innerHTML = leaderboard.map((player, index) => {
+            const isCurrentUser = userData && player.uid === userData.uid;
+            return `
+                <div class="leaderboard-item ${isCurrentUser ? 'current-user' : ''}">
+                    <span class="leaderboard-rank">${index + 1}.</span>
+                    <span class="leaderboard-username">${player.username}</span>
+                    <span class="leaderboard-score">${formatNumber(player.totalDezos)}</span>
+                </div>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Failed to refresh leaderboard:', error);
+        document.getElementById('leaderboard-list').innerHTML = '<div class="leaderboard-loading">Failed to load leaderboard</div>';
+    }
+}
+
+// Initialize game
+document.addEventListener('DOMContentLoaded', () => {
+    loadGame();
+    generateUpgradeHTML();
+    updateDisplay();
+    updateUpgradeDisplay();
+    setupMenuToggles();
+    
+    // Show welcome message
+    setTimeout(() => {
+        showMessage("Welcome to Slovak Drunk Simulator! 🍺");
+    }, 1000);
+});
+
+// Update upgrade affordability regularly
+setInterval(updateUpgradeDisplay, 500);
+
+// Show help on load
+console.log('🍺 Zjebaný Dežo Clicker loaded! Type upgradeHelp() for upgrade commands.');
