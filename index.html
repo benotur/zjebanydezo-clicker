@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slovak Drunk Simulator - Zjebaný Dežo Edition!</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="auth-modal">
+        <div class="auth-content">
+            <h2 id="auth-title">Login to Zjebaný Dežo Clicker</h2>
+            <div id="login-form" class="auth-form">
+                <input type="email" id="login-email" placeholder="Email" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button id="login-btn">Login</button>
+                <p>Don't have an account? <a href="#" id="show-register">Register here</a></p>
+            </div>
+            
+            <div id="register-form" class="auth-form" style="display:none;">
+                <input type="text" id="register-username" placeholder="Username" required>
+                <input type="email" id="register-email" placeholder="Email" required>
+                <input type="password" id="register-password" placeholder="Password" required>
+                <button id="register-btn">Register</button>
+                <p>Already have an account? <a href="#" id="show-login">Login here</a></p>
+            </div>
+            
+            <div id="auth-error" class="auth-error"></div>
+        </div>
+    </div>
+
+    <!-- User Info Bar -->
+    <div id="user-bar" class="user-bar" style="display:none;">
+        <div class="user-info">
+            <span id="user-name">Welcome!</span>
+            <button id="logout-btn">Logout</button>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <header>
+            <h1>🍺 ZJEBANÝ DEŽO CLICKER 🍺</h1>
+            <p class="subtitle">Click the drunk guy and become a Slovak legend!</p>
+        </header>
+
+        <div class="main-game">
+            <div class="stats-panel">
+                <div class="stat">
+                    <span class="stat-label">Zjebaný Dežo:</span>
+                    <span id="halusky-count" class="stat-value">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Per Second:</span>
+                    <span id="halusky-per-second" class="stat-value">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Total:</span>
+                    <span id="total-halusky" class="stat-value">0</span>
+                </div>
+            </div>
+
+            <div class="clicker-area">
+                <button id="halusky-button" class="halusky-button">
+                    <div class="button-text">Click the drunk guy!</div>
+                </button>
+                <div id="click-effect" class="click-effect"></div>
+            </div>
+
+            <div class="upgrades-panel">
+                <h3>🏪 Slovak Drunk Shop - Upgrades</h3>
+                <div class="upgrades-grid">
+                    <div class="upgrade" data-upgrade="cursor">
+                        <div class="upgrade-icon">🍺</div>
+                        <div class="upgrade-info">
+                            <h4>Zlatý Bažant Beer</h4>
+                            <p>+1 zjebaný dežo per click</p>
+                            <div class="upgrade-cost">Cost: <span>10</span> dežo</div>
+                            <div class="upgrade-owned">Owned: <span>0</span></div>
+                        </div>
+                    </div>
+
+                    <div class="upgrade" data-upgrade="babicka">
+                        <div class="upgrade-icon">🏘️</div>
+                        <div class="upgrade-info">
+                            <h4>Panel Apartment</h4>
+                            <p>+1 zjebaný dežo per second</p>
+                            <div class="upgrade-cost">Cost: <span>100</span> dežo</div>
+                            <div class="upgrade-owned">Owned: <span>0</span></div>
+                        </div>
+                    </div>
+
+                    <div class="upgrade" data-upgrade="kucharka">
+                        <div class="upgrade-icon">🚗</div>
+                        <div class="upgrade-info">
+                            <h4>Škoda Felicia</h4>
+                            <p>+5 zjebaný dežo per second</p>
+                            <div class="upgrade-cost">Cost: <span>500</span> dežo</div>
+                            <div class="upgrade-owned">Owned: <span>0</span></div>
+                        </div>
+                    </div>
+
+                    <div class="upgrade" data-upgrade="restauracia">
+                        <div class="upgrade-icon">👴</div>
+                        <div class="upgrade-info">
+                            <h4>Village Grandpa</h4>
+                            <p>+25 zjebaný dežo per second</p>
+                            <div class="upgrade-cost">Cost: <span>2500</span> dežo</div>
+                            <div class="upgrade-owned">Owned: <span>0</span></div>
+                        </div>
+                    </div>
+
+                    <div class="upgrade" data-upgrade="fabrika">
+                        <div class="upgrade-icon">🏭</div>
+                        <div class="upgrade-info">
+                            <h4>VSŽ Košice Steel Plant</h4>
+                            <p>+100 zjebaný dežo per second</p>
+                            <div class="upgrade-cost">Cost: <span>10000</span> dežo</div>
+                            <div class="upgrade-owned">Owned: <span>0</span></div>
+                        </div>
+                    </div>
+
+                    <div class="upgrade" data-upgrade="slovensko">
+                        <div class="upgrade-icon">⛰️</div>
+                        <div class="upgrade-info">
+                            <h4>High Tatras Tourism</h4>
+                            <p>+500 zjebaný dežo per second</p>
+                            <div class="upgrade-cost">Cost: <span>50000</span> dežo</div>
+                            <div class="upgrade-owned">Owned: <span>0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="achievements">
+            <h3>🏆 Slovak Achievements</h3>
+            <div id="achievements-list" class="achievements-list">
+                <!-- Achievements will be added dynamically -->
+            </div>
+        </div>
+
+        <div class="leaderboard">
+            <h3>🥇 Slovak Dežo Leaderboard</h3>
+            <div class="leaderboard-controls">
+                <button id="refresh-leaderboard">Refresh</button>
+                <span id="leaderboard-timer">Next update: 30s</span>
+            </div>
+            <div id="leaderboard-list" class="leaderboard-list">
+                <div class="leaderboard-loading">Loading leaderboard...</div>
+            </div>
+        </div>
+
+        <div class="funny-messages">
+            <div id="message-display" class="message-display"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module" src="firebase.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
