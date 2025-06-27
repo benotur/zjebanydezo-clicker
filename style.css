@@ -792,7 +792,7 @@ header h1 {
 
 /* Safari specific fixes */
 @supports (-webkit-appearance: none) {
-    .halusky-button {
+    .zjebanydezo-button {
         -webkit-transform-style: preserve-3d;
         transform-style: preserve-3d;
         -webkit-backface-visibility: hidden;
@@ -810,6 +810,27 @@ header h1 {
         appearance: none;
         border-radius: 8px;
     }
+    
+    /* Fix for upgrade display issues on Safari mobile */
+    .upgrade-info h4 {
+        -webkit-font-smoothing: antialiased;
+        font-display: block;
+        min-height: 1.2em;
+    }
+    
+    .upgrade-info p {
+        -webkit-font-smoothing: antialiased;
+        font-display: block;
+        min-height: 1em;
+    }
+    
+    .upgrade-cost span,
+    .upgrade-owned span {
+        -webkit-font-smoothing: antialiased;
+        font-display: block;
+        min-width: 2em;
+        display: inline-block;
+    }
 }
 
 /* iOS Safari viewport fix */
@@ -820,6 +841,27 @@ header h1 {
 
     .mobile-layout {
         min-height: calc(-webkit-fill-available - 200px);
+    }
+    
+    /* Fix for text rendering issues on iOS Safari */
+    .upgrade-info h4,
+    .upgrade-info p,
+    .upgrade-cost,
+    .upgrade-owned {
+        -webkit-text-size-adjust: 100%;
+        text-rendering: optimizeLegibility;
+        -webkit-font-feature-settings: "kern" 1;
+        font-feature-settings: "kern" 1;
+    }
+    
+    /* Prevent text from becoming invisible */
+    .upgrade-cost span,
+    .upgrade-owned span {
+        opacity: 1;
+        visibility: visible;
+        display: inline-block;
+        min-width: 1em;
+        min-height: 1em;
     }
 }
 

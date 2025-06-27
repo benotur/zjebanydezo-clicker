@@ -202,19 +202,29 @@ function updateUpgradeDisplay() {
         const upgradeType = upgrade.dataset.upgrade;
         const upgradeData = gameState.upgrades[upgradeType];
         
-        if (!upgradeData) return; // Skip if upgrade doesn't exist
+        if (!upgradeData) {
+            console.warn(`Upgrade data not found for ${upgradeType}`);
+            return; // Skip if upgrade doesn't exist
+        }
         
         const costElement = upgrade.querySelector('.upgrade-cost span');
         const ownedElement = upgrade.querySelector('.upgrade-owned span');
         
-        if (costElement) costElement.textContent = formatNumber(upgradeData.cost);
-        if (ownedElement) ownedElement.textContent = upgradeData.owned;
+        // More robust element checking for Safari mobile
+        if (costElement && typeof upgradeData.cost !== 'undefined') {
+            costElement.textContent = formatNumber(upgradeData.cost);
+        }
+        if (ownedElement && typeof upgradeData.owned !== 'undefined') {
+            ownedElement.textContent = upgradeData.owned;
+        }
         
-        // Check if affordable
-        if (gameState.zjebanydezo >= upgradeData.cost) {
-            upgrade.classList.add('affordable');
-        } else {
-            upgrade.classList.remove('affordable');
+        // Check if affordable with additional validation
+        if (typeof gameState.zjebanydezo === 'number' && typeof upgradeData.cost === 'number') {
+            if (gameState.zjebanydezo >= upgradeData.cost) {
+                upgrade.classList.add('affordable');
+            } else {
+                upgrade.classList.remove('affordable');
+            }
         }
     });
 }
@@ -280,33 +290,48 @@ function saveGame() {
 
 // Load game from localStorage
 function loadGame() {
-    const savedGame = localStorage.getItem('slovakSimulatorSave');
-    if (savedGame) {
-        const savedData = JSON.parse(savedGame);
-        
-        // Merge saved data with current gameState, preserving new upgrade structure
-        Object.assign(gameState, {
-            ...savedData,
-            upgrades: {
-                ...gameState.upgrades,
-                ...savedData.upgrades
+    try {
+        const savedGame = localStorage.getItem('slovakSimulatorSave');
+        if (savedGame) {
+            const savedData = JSON.parse(savedGame);
+            
+            // Ensure saved data is valid
+            if (savedData && typeof savedData === 'object') {
+                // Merge saved data with current gameState, preserving new upgrade structure
+                Object.assign(gameState, {
+                    ...savedData,
+                    upgrades: {
+                        ...gameState.upgrades,
+                        ...savedData.upgrades
+                    }
+                });
+                
+                // Ensure data integrity after loading
+                ensureUpgradeDataIntegrity();
+                
+                updateDisplay();
+                
+                // Restore achievements
+                if (gameState.achievements && Array.isArray(gameState.achievements)) {
+                    gameState.achievements.forEach(achievementId => {
+                        const achievement = achievementsList.find(a => a.id === achievementId);
+                        if (achievement) {
+                            const achievementElement = document.createElement('div');
+                            achievementElement.className = 'achievement';
+                            achievementElement.textContent = achievement.name;
+                            achievementElement.title = achievement.description;
+                            if (achievementsList_el) {
+                                achievementsList_el.appendChild(achievementElement);
+                            }
+                        }
+                    });
+                }
             }
-        });
-        
-        updateDisplay();
-        updateUpgradeDisplay();
-        
-        // Restore achievements
-        gameState.achievements.forEach(achievementId => {
-            const achievement = achievementsList.find(a => a.id === achievementId);
-            if (achievement) {
-                const achievementElement = document.createElement('div');
-                achievementElement.className = 'achievement';
-                achievementElement.textContent = achievement.name;
-                achievementElement.title = achievement.description;
-                achievementsList_el.appendChild(achievementElement);
-            }
-        });
+        }
+    } catch (error) {
+        console.error('Error loading game data:', error);
+        // Ensure data integrity even if loading fails
+        ensureUpgradeDataIntegrity();
     }
 }
 
@@ -352,22 +377,39 @@ function toggleMenu(button, menu) {
 // Dynamic upgrade generation system
 function generateUpgradeHTML() {
     const upgradesGrid = document.querySelector('.upgrades-grid');
-    if (!upgradesGrid) return;
+    if (!upgradesGrid) {
+        console.warn('Upgrades grid not found, retrying...');
+        setTimeout(generateUpgradeHTML, 100);
+        return;
+    }
 
     upgradesGrid.innerHTML = ''; // Clear existing content
 
     Object.entries(gameState.upgrades).forEach(([key, upgrade]) => {
+        // Additional validation for Safari mobile
+        if (!upgrade || typeof upgrade !== 'object') {
+            console.warn(`Invalid upgrade data for ${key}:`, upgrade);
+            return;
+        }
+        
         const upgradeElement = document.createElement('div');
         upgradeElement.className = 'upgrade';
         upgradeElement.dataset.upgrade = key;
 
+        // Ensure all required properties exist with fallbacks
+        const name = upgrade.name || 'Unknown Upgrade';
+        const description = upgrade.description || 'No description';
+        const icon = upgrade.icon || '❓';
+        const cost = upgrade.cost || 0;
+        const owned = upgrade.owned || 0;
+
         upgradeElement.innerHTML = `
-            <div class="upgrade-icon">${upgrade.icon}</div>
+            <div class="upgrade-icon">${icon}</div>
             <div class="upgrade-info">
-                <h4>${upgrade.name}</h4>
-                <p>${upgrade.description}</p>
-                <div class="upgrade-cost">Cost: <span>${formatNumber(upgrade.cost)}</span></div>
-                <div class="upgrade-owned">Owned: <span>${upgrade.owned}</span></div>
+                <h4>${name}</h4>
+                <p>${description}</p>
+                <div class="upgrade-cost">Cost: <span>${formatNumber(cost)}</span></div>
+                <div class="upgrade-owned">Owned: <span>${owned}</span></div>
             </div>
         `;
 
@@ -625,16 +667,30 @@ async function refreshLeaderboard() {
 
 // Initialize game
 document.addEventListener('DOMContentLoaded', () => {
-    loadGame();
-    generateUpgradeHTML();
-    updateDisplay();
-    updateUpgradeDisplay();
-    setupMenuToggles();
-    
-    // Show welcome message
+    // Additional delay for mobile Safari compatibility
     setTimeout(() => {
-        showMessage("Welcome to Slovak Drunk Simulator! 🍺");
-    }, 1000);
+        // Handle mobile Safari quirks
+        handleMobileSafariQuirks();
+        
+        // Ensure data integrity first
+        ensureUpgradeDataIntegrity();
+        
+        loadGame();
+        generateUpgradeHTML();
+        updateDisplay();
+        
+        // Extra delay for upgrade display on mobile Safari
+        setTimeout(() => {
+            updateUpgradeDisplay();
+        }, isMobileSafari() ? 200 : 100);
+        
+        setupMenuToggles();
+        
+        // Show welcome message
+        setTimeout(() => {
+            showMessage("Welcome to Slovak Drunk Simulator! 🍺");
+        }, 1000);
+    }, isMobileSafari() ? 100 : 50);
 });
 
 // Update upgrade affordability regularly
@@ -642,3 +698,70 @@ setInterval(updateUpgradeDisplay, 500);
 
 // Show help on load
 console.log('🍺 Zjebaný Dežo Clicker loaded! Type upgradeHelp() for upgrade commands.');
+
+// Safari mobile compatibility check
+function ensureUpgradeDataIntegrity() {
+    Object.keys(gameState.upgrades).forEach(key => {
+        const upgrade = gameState.upgrades[key];
+        if (!upgrade || typeof upgrade !== 'object') {
+            console.warn(`Fixing corrupted upgrade data for ${key}`);
+            // Reset to default if corrupted
+            gameState.upgrades[key] = {
+                owned: 0,
+                cost: 1000,
+                power: 10,
+                costMultiplier: 1.15,
+                name: "Unknown Upgrade",
+                icon: "❓",
+                description: "Upgrade data corrupted"
+            };
+        } else {
+            // Ensure all required properties exist
+            if (typeof upgrade.owned !== 'number') upgrade.owned = 0;
+            if (typeof upgrade.cost !== 'number') upgrade.cost = 1000;
+            if (typeof upgrade.power !== 'number') upgrade.power = 10;
+            if (typeof upgrade.costMultiplier !== 'number') upgrade.costMultiplier = 1.15;
+            if (typeof upgrade.name !== 'string') upgrade.name = "Unknown Upgrade";
+            if (typeof upgrade.icon !== 'string') upgrade.icon = "❓";
+            if (typeof upgrade.description !== 'string') upgrade.description = "No description";
+        }
+    });
+}
+
+// Mobile Safari detection and handling
+function isMobileSafari() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent);
+}
+
+function handleMobileSafariQuirks() {
+    if (isMobileSafari()) {
+        // Force repaint of upgrade elements
+        setTimeout(() => {
+            const upgrades = document.querySelectorAll('.upgrade');
+            upgrades.forEach(upgrade => {
+                upgrade.style.transform = 'translateZ(0)';
+                upgrade.style.webkitTransform = 'translateZ(0)';
+            });
+        }, 200);
+        
+        // Additional delay for upgrade display updates
+        const originalUpdateUpgradeDisplay = updateUpgradeDisplay;
+        updateUpgradeDisplay = function() {
+            setTimeout(originalUpdateUpgradeDisplay, 10);
+        };
+        
+        // Force upgrade regeneration every 30 seconds on mobile Safari to prevent display issues
+        setInterval(() => {
+            if (document.querySelector('.upgrades-grid')) {
+                generateUpgradeHTML();
+                updateUpgradeDisplay();
+            }
+        }, 30000);
+    }
+}
+
+// Ensure upgrade data integrity on load
+ensureUpgradeDataIntegrity();
+
+// Apply Mobile Safari handling
+handleMobileSafariQuirks();
